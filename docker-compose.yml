@@ -1,0 +1,31 @@
+version: "3.11"
+
+services:
+  task_manager:
+    build:
+      context: .
+      args:
+        DEV: true
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./task_manager:/task_manager
+    command: >
+      sh -c "python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      .env
+    depends_on:
+      - db
+  psql:
+    image: postgres:15.2-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+volumes:
+  dev-db-data
